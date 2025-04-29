@@ -1,5 +1,5 @@
 {% set name = "stripe" %}
-{% set version = "2.49.0" %}
+{% set version = "12.0.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,33 +7,41 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 89331e81f8849631dac7b0772092605a74d8b48b15a78a6e483681d301a5af81
+  sha256: 3fc7cc190946d8ebcc5b637e7e04f387d61b9c5156a89619a3ba90704ac09d4a
 
 build:
   number: 0
-  noarch: python
-  script: "{{ PYTHON }} -m pip install . -vv"
-
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  skip: true  # [py<36]
 requirements:
   host:
     - python
     - pip
+    - setuptools
+    - wheel
   run:
     - python
     - requests >=2.20
+    - typing-extensions >3.7.2,<=4.2.0  # [py<37]
 
 test:
+  requires:
+    - pip
+    - typing-extensions
   imports:
     - stripe
     - stripe.api_resources
     - stripe.api_resources.abstract
     - stripe.api_resources.issuing
     - stripe.api_resources.sigma
+  commands:
+    - pip check
 
 about:
   home: https://github.com/stripe/stripe-python
   license: MIT
   license_file: LICENSE
+  license_family: MIT
   summary: Stripe python bindings
   description: |
     Stripe is the best software platform for running an internet business.
