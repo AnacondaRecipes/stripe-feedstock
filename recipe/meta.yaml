@@ -23,6 +23,7 @@ requirements:
     - python
     - requests >=2.20
     - typing-extensions >3.7.2,<=4.2.0  # [py<37]
+    - typing-extensions >=4.5.0  # [py>=37]
 
 test:
   requires:
