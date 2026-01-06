@@ -1,29 +1,30 @@
 {% set name = "stripe" %}
-{% set version = "12.0.1" %}
+{% set version = "14.1.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 3fc7cc190946d8ebcc5b637e7e04f387d61b9c5156a89619a3ba90704ac09d4a
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: d002ecd2966a984a52a43e865bc9346c389f20e768e13fdbbe9cb9474f917c23
 
 build:
   number: 0
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
-  skip: true  # [py<36]
+  skip: true  # [py<37]
+
 requirements:
   host:
     - python
     - pip
-    - setuptools
-    - wheel
+    - flit-core >=3.11,<4
   run:
     - python
-    - requests >=2.20
+    - requests >=2.20  # [py>=30]
     - typing-extensions >3.7.2,<=4.2.0  # [py<37]
     - typing-extensions >=4.5.0  # [py>=37]
+    - typing_extensions >=4.5.0  # [py>=37]
 
 test:
   requires:
