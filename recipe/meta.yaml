@@ -95,11 +95,12 @@ about:
   license: MIT
   license_file: LICENSE
   license_family: MIT
-  summary: Stripe python bindings
+  summary: The Stripe Python library provides convenient access to the Stripe API from applications written in the Python language.
   description: |
-    Stripe is the best software platform for running an internet business.
-  doc_url: https://stripe.com/docs/api/python#intro
-  doc_source_url: https://github.com/stripe/stripe-python
+    The Stripe Python library provides convenient access to the Stripe API from applications written in the Python language.
+    It includes a pre-defined set of classes for API resources that initialize themselves dynamically from API
+    responses which makes it compatible with a wide range of versions of the Stripe API.
+  doc_url: https://docs.stripe.com/api?lang=python
   dev_url: https://github.com/stripe/stripe-python
 
 extra:
