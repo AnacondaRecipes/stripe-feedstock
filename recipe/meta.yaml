@@ -21,23 +21,74 @@ requirements:
     - flit-core >=3.11,<4
   run:
     - python
-    - requests >=2.20  # [py>=30]
     - typing-extensions >3.7.2,<=4.2.0  # [py<37]
     - typing-extensions >=4.5.0  # [py>=37]
-    - typing_extensions >=4.5.0  # [py>=37]
+    - requests >=2.20  # [py>=30]
 
 test:
-  requires:
-    - pip
-    - typing-extensions
   imports:
     - stripe
-    - stripe.api_resources
-    - stripe.api_resources.abstract
-    - stripe.api_resources.issuing
-    - stripe.api_resources.sigma
+    - stripe._account
+    - stripe._any_iterator
+    - stripe._api_mode
+    - stripe._api_requestor
+    - stripe._api_resource
+    - stripe._api_version
+    - stripe._app_info
+    - stripe._application_fee
+    - stripe._base_address
+    - stripe._charge
+    - stripe._client_options
+    - stripe._createable_api_resource
+    - stripe._custom_method
+    - stripe._customer
+    - stripe._deletable_api_resource
+    - stripe._encode
+    - stripe._error
+    - stripe._error_object
+    - stripe._event
+    - stripe._expandable_field
+    - stripe._file
+    - stripe._http_client
+    - stripe._invoice
+    - stripe._list_object
+    - stripe._listable_api_resource
+    - stripe._multipart_data_generator
+    - stripe._nested_resource_class_methods
+    - stripe._oauth
+    - stripe._oauth_service
+    - stripe._person
+    - stripe._request_metrics
+    - stripe._request_options
+    - stripe._requestor_options
+    - stripe._search_result_object
+    - stripe._searchable_api_resource
+    - stripe._singleton_api_resource
+    - stripe._stripe_client
+    - stripe._stripe_context
+    - stripe._stripe_object
+    - stripe._stripe_response
+    - stripe._stripe_service
+    - stripe._test_helpers
+    - stripe._transfer
+    - stripe._updateable_api_resource
+    - stripe._util
+    - stripe._v1_services
+    - stripe._v2_services
+    - stripe._verify_mixin
+    - stripe._version
+    - stripe._webhook
+    - stripe.billing._meter
+    - stripe.events
+    - stripe.oauth_error
+  requires:
+    - pip
+    - pytest
+    - anyio
   commands:
     - pip check
+    # INTERNALERROR> urllib3.exceptions.NewConnectionError: HTTPConnection(host='localhost', port=12111): Failed to establish a new connection: [Errno 61] Connection refused
+    # - pytest -v tests
 
 about:
   home: https://github.com/stripe/stripe-python
