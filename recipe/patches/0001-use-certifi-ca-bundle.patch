@@ -1,0 +1,71 @@
+From 98a66f6227664db62c4592fb74cd24b5496017a2 Mon Sep 17 00:00:00 2001
+From: Andrew Howe <ahowe@anaconda.com>
+Date: Fri, 23 Oct 2026 13:30:12 -0400
+Subject: [PATCH] Use certifi CA bundle instead of vendored ca-certificates.crt
+
+Point stripe.ca_bundle_path at certifi.where() and update the tests to match, adding checks that the bundle is certifi's and loads into an SSLContext.
+
+diff --git a/stripe/__init__.py b/stripe/__init__.py
+index d5124858..3e0f6668 100644
+--- a/stripe/__init__.py
++++ b/stripe/__init__.py
+@@ -1,6 +1,6 @@
+ from typing_extensions import TYPE_CHECKING, Literal
+ from typing import Optional
+-import os
++import certifi
+ import warnings
+ 
+ # Stripe Python bindings
+@@ -37,9 +37,7 @@ default_http_client: Optional["HTTPClient"] = None
+ app_info: Optional[AppInfo] = None
+ enable_telemetry: bool = True
+ max_network_retries: int = 2
+-ca_bundle_path: str = os.path.join(
+-    os.path.dirname(__file__), "data", "ca-certificates.crt"
+-)
++ca_bundle_path: str = certifi.where()
+ 
+ # Lazily initialized stripe.default_http_client
+ default_http_client = None
+diff --git a/tests/test_http_client.py b/tests/test_http_client.py
+index 8b3ab71f..e5debd00 100644
+--- a/tests/test_http_client.py
++++ b/tests/test_http_client.py
+@@ -1,6 +1,7 @@
+ import io
+ import base64
+ import json
++import ssl
+ import sys
+ from typing import Any, Callable, Dict, List, Optional
+ from unittest.mock import MagicMock, Mock, call, patch
+@@ -15,6 +16,7 @@ else:
+ 
+ from contextlib import contextmanager
+ 
++import certifi
+ import urllib3
+ 
+ import stripe
+@@ -602,7 +604,16 @@ class RequestsVerify(object):
+         if not other:
+             return False
+         normalized = other.replace("\\", "/")
+-        return normalized.endswith("stripe/data/ca-certificates.crt")
++        return normalized == certifi.where().replace("\\", "/")
++
++
++def test_ca_bundle_uses_certifi():
++    assert stripe.ca_bundle_path == certifi.where()
++
++
++def test_ca_bundle_is_loadable():
++    context = ssl.create_default_context(cafile=stripe.ca_bundle_path)
++    assert context.get_ca_certs()
+ 
+ 
+ class TestRequestsClient(ClientTestBase):
+-- 
+2.51.0
+

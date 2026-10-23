@@ -8,10 +8,17 @@ package:
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: 5016068d54aebb43e61b3c377ef45bede4e0b4eb1817d7a12af81630c55a23d2
+  patches:
+    - patches/0001-use-certifi-ca-bundle.patch
 
 build:
-  number: 0
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  number: 1
+  script: |
+    # Remove the vendored CA bundle before the build proceeds so that the certificates don'tags
+    # accidentally get vendored in.
+    rm -f stripe/data/ca-certificates.crt  # [unix]
+    if exist stripe\data\ca-certificates.crt del /f /q stripe\data\ca-certificates.crt  # [win]
+    {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
   skip: true  # [py<39]
 
 requirements:
@@ -21,10 +28,13 @@ requirements:
     - flit-core >=3.11,<4
   run:
     - python
+    - certifi >=2026.10.19
     - typing-extensions >=4.7.0
     - requests >=2.20
 
 test:
+  source_files:
+    - tests
   imports:
     - stripe
     - stripe._account
@@ -86,6 +96,9 @@ test:
     - anyio
   commands:
     - pip check
+    # Offline CA bundle tests (added by the certifi patch). The rest of the suite needs stripe-mock.
+    - pytest -v --nomock tests/test_http_client.py -k test_ca_bundle
+    - python -c "import os, stripe; assert not os.path.exists(os.path.join(os.path.dirname(stripe.__file__), 'data', 'ca-certificates.crt'))"
     # INTERNALERROR> urllib3.exceptions.NewConnectionError: HTTPConnection(host='localhost', port=12111): Failed to establish a new connection: [Errno 61] Connection refused
     # - pytest -v tests
 
