@@ -23,7 +23,7 @@ requirements:
   host:
     - python
     - pip
-    - ca-certificates
+    - ca-certificates >=2026.10.20
     - flit-core >=3.11,<4
   run:
     - python
