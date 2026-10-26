@@ -14,7 +14,9 @@ build:
   # Replace stripe's vendored CA bundle (contains compromised eMudhra roots, stripe-python#1954)
   # with the ca-certificates package bundle. The script fails if the vendored file changes, so
   # the next stripe update must re-evaluate this. Drop it once upstream ships a fixed bundle.
-  script: {{ PYTHON }} {{ RECIPE_DIR }}/replace_ca_bundle.py && {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  script: 
+    - {{ PYTHON }} {{ RECIPE_DIR }}/replace_ca_bundle.py
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
   skip: true  # [py<39]
 
 requirements:
