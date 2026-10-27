@@ -87,7 +87,6 @@ test:
     - anyio
   commands:
     - pip check
-
     # Ensure the eMudhra compromised certificates are not present in the bundle
     - python -c "import stripe; t = open(stripe.ca_bundle_path).read(); bad = [n for n in ('emSign ECC Root CA - G3', 'emSign ECC Root CA - C3', 'emSign Root CA - C1') if n in t]; assert not bad, bad"
     # INTERNALERROR> urllib3.exceptions.NewConnectionError: HTTPConnection(host='localhost', port=12111): Failed to establish a new connection: [Errno 61] Connection refused
