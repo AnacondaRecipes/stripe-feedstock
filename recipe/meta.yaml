@@ -1,5 +1,5 @@
 {% set name = "stripe" %}
-{% set version = "16.0.0" %}
+{% set version = "16.0.1" %}
 
 package:
   name: {{ name }}
@@ -7,15 +7,11 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 5016068d54aebb43e61b3c377ef45bede4e0b4eb1817d7a12af81630c55a23d2
+  sha256: 44f20abd85c5cdac1d019c290b2fa055db2b6f4890f7f3b2daa493eb48c9a0d2
 
 build:
-  number: 1
-  # Replace stripe's vendored CA bundle (contains compromised eMudhra roots, stripe-python#1954)
-  # with the ca-certificates package bundle. The script fails if the vendored file changes, so
-  # the next stripe update must re-evaluate this. Drop it once upstream ships a fixed bundle.
+  number: 0
   script:
-    - {{ PYTHON }} {{ RECIPE_DIR }}/replace_ca_bundle.py
     - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
   skip: true  # [py<39]
 
@@ -23,7 +19,6 @@ requirements:
   host:
     - python
     - pip
-    - ca-certificates >=2026.10.20
     - flit-core >=3.11,<4
   run:
     - python
@@ -92,6 +87,7 @@ test:
     - anyio
   commands:
     - pip check
+    # Ensure the eMudhra compromised certificates are not present in the bundle
     - python -c "import stripe; t = open(stripe.ca_bundle_path).read(); bad = [n for n in ('emSign ECC Root CA - G3', 'emSign ECC Root CA - C3', 'emSign Root CA - C1') if n in t]; assert not bad, bad"
     # INTERNALERROR> urllib3.exceptions.NewConnectionError: HTTPConnection(host='localhost', port=12111): Failed to establish a new connection: [Errno 61] Connection refused
     # - pytest -v tests
